@@ -4,8 +4,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=8192M
 
-ml load python
-ml load scipy-stack
+# ml load python
+# ml load scipy-stack
 source $HOME/langevin_env_repr/bin/activate
 
 N=__N__
