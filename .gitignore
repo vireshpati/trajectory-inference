@@ -1,1 +1,29 @@
-.DS_Store
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/*.so
+**/build/
+**/dist/
+**/*.egg-info/
+
+# Environment
+**/.env
+**/.venv/
+**/venv/
+
+# IDE
+**/.idea/
+**/.vscode/
+**/*.swp
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Jupyter
+**/.ipynb_checkpoints/
+
+# Testing
+**/.coverage
+**/.pytest_cache/
+**/htmlcov/
