@@ -1,6 +1,6 @@
 This repository includes cross-comparison performance testing for the trajectory inference methods put forward by the papers below on their respective datasets.
 
-For overlead WIP: https://github.com/vireshpati/AI4TS-2025-Spring 
+For up-to-date documents on overleaf : https://github.com/vireshpati/AI4TS-2025-Spring 
 
 ## References ##
 
