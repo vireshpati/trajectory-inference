@@ -2,6 +2,12 @@ This repository includes cross-comparison performance testing for the trajectory
 
 For up-to-date documents on overleaf : https://github.com/vireshpati/AI4TS-2025-Spring 
 
+Relevant scripts are:
+- for MFL native: mfl/fig1_batch/run_local.sh
+- for MFL eot benchmark: mfl/fig1_batch/eot_mfl_benchmark.py
+- for schrodinger plug-in native: SinkhornBridges/examples/Guschin_benchmark.ipynb
+- for schrodinger plug-in on multi-time dataset: implementation TBD. need to ensure marginals are aligned between steps.
+
 ## References ##
 
 Aram-Alexandre Pooladian and Jonathan Niles-Weed. ”Plug-in estimation of
