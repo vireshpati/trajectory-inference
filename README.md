@@ -8,6 +8,8 @@ Relevant scripts are:
 - for schrodinger plug-in native: SinkhornBridges/examples/Guschin_benchmark.ipynb
 - for schrodinger plug-in on multi-time dataset: implementation TBD. need to ensure marginals are aligned between steps.
 
+Link EOT Bench: https://github.com/ngushchin/EntropicOTBenchmark
+
 ## References ##
 
 Aram-Alexandre Pooladian and Jonathan Niles-Weed. ”Plug-in estimation of
