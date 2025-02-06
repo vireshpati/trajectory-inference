@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.mixture import GaussianMixture
 from scipy.linalg import sqrtm
-sys.path.append("../EntropicOptimalTransportBenchmark")
+# sys.path.append("../EntropicOptimalTransportBenchmark")
 from eot_benchmark.benchmark.gaussian_mixture_benchmark import ConditionalPlan, PotentialCategoricalDistribution
 
 # patch the log probability calculation
@@ -16,7 +16,7 @@ def patched_calculate_log_probs(self, x):
     # self.potential_gaussians_distributions is a list of MultivariateNormal objects.
     log_probs = []
     for base_log_prob, mvn_dist in zip(self.log_probs, self.potential_gaussians_distributions):
-        lp = base_log_prob + mvn_dist.log_prob(x)  # should be shape [batch_size]
+        lp = base_log_prob + mvn_dist.log_prob(x)
         if lp.dim() == 0:
             lp = lp.unsqueeze(0)
         log_probs.append(lp)
@@ -57,12 +57,12 @@ np.set_printoptions(suppress=True, precision=4)
 torch.manual_seed(0)
 np.random.seed(0)
 
-# --- Set benchmark parameters ---
-DIM = 2               # dimensionality
-EPS = 1               # entropic regularization epsilon
-N_SAMPLES = 2500      # number of samples
+# Set benchmark parameters
+DIM = 2               
+EPS = 1              
+N_SAMPLES = 2500      
 
-# --- Initialize samplers ---
+# Initialize samplers 
 input_sampler = get_guassian_mixture_benchmark_sampler(
     input_or_target="input", dim=DIM, eps=EPS, batch_size=N_SAMPLES, device="cpu", download=True
 )
@@ -74,17 +74,17 @@ gt_plan_sampler = get_guassian_mixture_benchmark_ground_truth_sampler(
     dim=DIM, eps=EPS, batch_size=N_SAMPLES, device="cpu", download=True
 )
 
-# --- Draw samples ---
+
 # Draw source samples X0 and target samples Y0
-X0 = np.array(input_sampler.sample(n_samples=N_SAMPLES), dtype=np.float64)   # shape: (N_SAMPLES, DIM)
-Y0 = np.array(target_sampler.sample(n_samples=N_SAMPLES), dtype=np.float64)  # shape: (N_SAMPLES, DIM)
+X0 = np.array(input_sampler.sample(n_samples=N_SAMPLES), dtype=np.float64)  
+Y0 = np.array(target_sampler.sample(n_samples=N_SAMPLES), dtype=np.float64) 
 
 # Also, for the ground-truth coupling we get (X_gt, Y_gt) but we will only use Y0 for BW-UVP:
-X_gt, Y_gt = gt_plan_sampler.sample(n_samples=N_SAMPLES)  # each: (N_SAMPLES, DIM)
-XY_gt = np.hstack((X_gt, Y_gt))   # shape: (N_SAMPLES, 2*DIM)
+X_gt, Y_gt = gt_plan_sampler.sample(n_samples=N_SAMPLES)  
+XY_gt = np.hstack((X_gt, Y_gt))   
 print("Sample shapes:", X0.shape, Y0.shape, XY_gt.shape)
 
-# --- Fit Gaussian Mixture Models (GMMs) for density estimation ---
+# Fit Gaussian Mixture Models (GMMs) for density estimation 
 gmm_source = GaussianMixture(n_components=1, covariance_type='full', random_state=0)
 gmm_source.fit(X0)
 gmm_target = GaussianMixture(n_components=5, covariance_type='full', init_params='kmeans', random_state=0)
@@ -111,16 +111,15 @@ def score_target(y):
         grad += resp[:, [k]] * (-(diff) @ prec_k.T)
     return grad
 
-# --- Initialize coupling particles ---
-# We set X = X0 and Y = Y0 as initial particles.
+# Initialize coupling particles 
 X = X0.copy()
 Y = Y0.copy()
 
-# --- MFL Hyperparameters ---
+# MFL Hyperparameters
 num_iter = 2500      # number of Langevin iterations
-step_size = 1e-2     # step size
+step_size = 1e-2    
 
-# --- For BW-UVP, compute the target Gaussian from Y0 ---
+# for BW-UVP, compute the target Gaussian from Y0 
 target_mean = np.mean(Y0, axis=0)
 cov_target = np.cov(Y0, rowvar=False)
 sqrt_cov_target = sqrtm(cov_target)
@@ -141,13 +140,13 @@ def compute_bw_uvp(Y_generated):
     bw_uvp = 100 * bw2 / (0.5 * np.trace(cov_target))
     return bw_uvp
 
-# --- BW-UVP computation at iteration 0 ---
+# BW-UVP computation at iteration 0 
 bw_uvp_history = []
 dist0 = compute_bw_uvp(Y)
 bw_uvp_history.append(dist0)
 print(f"Iteration 0: BW-UVP distance = {dist0:.4f}")
 
-# --- Langevin simulation (Mean-Field Langevin iterations) with timing ---
+# Langevin simulation (Mean-Field Langevin iterations) with timing
 start_time = time.time()  # start timing the loop
 for t in range(1, num_iter+1):
     vX = score_source(X) - (1.0/EPS) * (X - Y)
@@ -160,7 +159,7 @@ for t in range(1, num_iter+1):
         dist = compute_bw_uvp(Y)
         bw_uvp_history.append(dist)
         print(f"Iteration {t}: BW-UVP distance = {dist:.4f}")
-end_time = time.time()  # end timing
+end_time = time.time()  
 
 total_time = end_time - start_time
 print(f"Total simulation time for {num_iter} iterations: {total_time:.4f} seconds")
